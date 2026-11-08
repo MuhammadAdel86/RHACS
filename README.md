@@ -38,6 +38,7 @@ The deployment consists of two primary planes within the `stackrox` namespace:
 │   ├── deploy.sh               # Automation script for Operator & Central setup
 │   └── get-admin-password.sh   # Utility script to extract initial admin credentials
 └── README.md
+---
 
 ## 🚀 Quickstart & Deployment
 **Prerequisites
