@@ -1,35 +1,29 @@
-Red Hat Advanced Cluster Security (RHACS) Deployment & DevSecOps Integration
+# Red Hat Advanced Cluster Security (RHACS) Deployment & DevSecOps Integration
 
-[https://img.shields.io/badge/OpenShift-4.x-red.svg?logo=redhat] [https://img.shields.io/badge/RHACS-StackRox-blue.svg] [https://img.shields.io/badge/License-Apache%202.0-green.svg]
+[[https://img.shields.io/badge/OpenShift-4.x-red.svg?logo=redhat]](https://www.redhat.com/en/technologies/cloud-computing/openshift)
+[[https://img.shields.io/badge/RHACS-StackRox-blue.svg]](https://www.redhat.com/en/technologies/cloud-computing/openshift/advanced-cluster-security-kubernetes)
+[[https://img.shields.io/badge/License-Apache%202.0-green.svg]](LICENSE)
 
-An enterprise deployment guide and GitOps-ready repository for installing, configuring, and operationalizing Red Hat Advanced Cluster Security for Kubernetes (RHACS / StackRox) on OpenShift.
+An enterprise deployment guide and GitOps-ready repository for installing, configuring, and operationalizing **Red Hat Advanced Cluster Security for Kubernetes (RHACS / StackRox)** on OpenShift.
 
-This repository covers the complete lifecycle: Central deployment with Scanner V4, SecuredCluster enrollment, and automated CI/CD security scanning using OpenShift BuildConfig post-commit hooks.
-🏗️ Architecture Overview
+This repository covers the complete lifecycle: Central deployment with Scanner V4, SecuredCluster enrollment, and automated CI/CD security scanning using OpenShift `BuildConfig` post-commit hooks.
 
-The deployment consists of two primary planes within the stackrox namespace:
+---
 
-    Central Services (Management Plane)
-        Central: Core API, policy engine, and web dashboard exposed via OpenShift Route.
-        Central DB: High-performance PostgreSQL datastore for configurations, CVEs, and compliance data.
-        Scanner & Scanner V4: Modular vulnerability scanners (Indexer, Matcher, DB) supporting OS packages, language dependencies, and container layer decomposition.
+## 🏗️ Architecture Overview
 
-    Secured Cluster Services (Enforcement Plane)
-        Sensor: Communicates cluster state and deployment events back to Central over mTLS (central.stackrox:443).
-        Admission Controller: Validates and enforces deployment policies at admission time.
-        Collector: Node-level kernel monitoring (eBPF) for runtime threat detection and network graphing.
+The deployment consists of two primary planes within the `stackrox` namespace:
 
-📁 Repository Structure
+1. **Central Services (Management Plane)**
+   * **Central**: Core API, policy engine, and web dashboard exposed via OpenShift Route.
+   * **Central DB**: High-performance PostgreSQL datastore for configurations, CVEs, and compliance data.
+   * **Scanner & Scanner V4**: Modular vulnerability scanners (Indexer, Matcher, DB) supporting OS packages, language dependencies, and container layer decomposition.
 
-.
-├── manifests/
-│   ├── central.yaml            # Central CustomResource (Route, Scanner V4, Resources)
-│   ├── secured-cluster.yaml    # SecuredCluster CustomResource (Sensor, Analyzer, mTLS)
-│   └── buildconfig-scan.yaml   # OpenShift BuildConfig with roxctl postCommit hook
-├── scripts/
-│   ├── deploy.sh               # Automation script for Operator & Central setup
-│   └── get-admin-password.sh   # Utility script to extract initial admin credentials
-└── README.md
+2. **Secured Cluster Services (Enforcement Plane)**
+   * **Sensor**: Communicates cluster state and deployment events back to Central over mTLS (`central.stackrox:443`).
+   * **Admission Controller**: Validates and enforces deployment policies at admission time.
+   * **Collector**: Node-level kernel monitoring (eBPF) for runtime threat detection and network graphing.
+
 ---
 
 ## 🚀 Quickstart & Deployment
@@ -85,24 +79,6 @@ Bash
 
 oc get pods -n stackrox -l 'app.kubernetes.io/name in (sensor, admission-control, collector)'
 
-🛡️ Shift-Left: CI/CD Security Integration
-
-This repository includes an example OpenShift BuildConfig leveraging postCommit hooks to trigger roxctl image check immediately following an image build:
-YAML
-
-postCommit:
-  script: |
-    roxctl image check \
-      --endpoint "central.stackrox.svc:443" \
-      --insecure-skip-tls-verify \
-      --image "$OPENSHIFT_BUILD_IMAGE" \
-      --strict
-
-If the built image violates critical security policies, the build terminates with exit 1, preventing vulnerable images from being pushed to registries or scheduled on nodes.
-🔍 Verification & Health Checks
-
-Run a cluster-wide status check:
-Bash
 
 # Check all Custom Resources
 oc get central,securedcluster -n stackrox
