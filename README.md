@@ -1,34 +1,26 @@
-# Red Hat Advanced Cluster Security (RHACS) Deployment & DevSecOps Integration
+Red Hat Advanced Cluster Security (RHACS) Deployment & DevSecOps Integration
 
-[[https://img.shields.io/badge/OpenShift-4.x-red.svg?logo=redhat]](https://www.redhat.com/en/technologies/cloud-computing/openshift)
-[[https://img.shields.io/badge/RHACS-StackRox-blue.svg]](https://www.redhat.com/en/technologies/cloud-computing/openshift/advanced-cluster-security-kubernetes)
-[[https://img.shields.io/badge/License-Apache%202.0-green.svg]](LICENSE)
+[https://img.shields.io/badge/OpenShift-4.x-red.svg?logo=redhat] [https://img.shields.io/badge/RHACS-StackRox-blue.svg] [https://img.shields.io/badge/License-Apache%202.0-green.svg]
 
-An enterprise deployment guide and GitOps-ready repository for installing, configuring, and operationalizing **Red Hat Advanced Cluster Security for Kubernetes (RHACS / StackRox)** on OpenShift.
+An enterprise deployment guide and GitOps-ready repository for installing, configuring, and operationalizing Red Hat Advanced Cluster Security for Kubernetes (RHACS / StackRox) on OpenShift.
 
-This repository covers the complete lifecycle: Central deployment with Scanner V4, SecuredCluster enrollment, and automated CI/CD security scanning using OpenShift `BuildConfig` post-commit hooks.
+This repository covers the complete lifecycle: Central deployment with Scanner V4, SecuredCluster enrollment, and automated CI/CD security scanning using OpenShift BuildConfig post-commit hooks.
+🏗️ Architecture Overview
 
----
+The deployment consists of two primary planes within the stackrox namespace:
 
-## 🏗️ Architecture Overview
+    Central Services (Management Plane)
+        Central: Core API, policy engine, and web dashboard exposed via OpenShift Route.
+        Central DB: High-performance PostgreSQL datastore for configurations, CVEs, and compliance data.
+        Scanner & Scanner V4: Modular vulnerability scanners (Indexer, Matcher, DB) supporting OS packages, language dependencies, and container layer decomposition.
 
-The deployment consists of two primary planes within the `stackrox` namespace:
+    Secured Cluster Services (Enforcement Plane)
+        Sensor: Communicates cluster state and deployment events back to Central over mTLS (central.stackrox:443).
+        Admission Controller: Validates and enforces deployment policies at admission time.
+        Collector: Node-level kernel monitoring (eBPF) for runtime threat detection and network graphing.
 
-1. **Central Services (Management Plane)**
-   * **Central**: Core API, policy engine, and web dashboard exposed via OpenShift Route.
-   * **Central DB**: High-performance PostgreSQL datastore for configurations, CVEs, and compliance data.
-   * **Scanner & Scanner V4**: Modular vulnerability scanners (Indexer, Matcher, DB) supporting OS packages, language dependencies, and container layer decomposition.
+📁 Repository Structure
 
-2. **Secured Cluster Services (Enforcement Plane)**
-   * **Sensor**: Communicates cluster state and deployment events back to Central over mTLS (`central.stackrox:443`).
-   * **Admission Controller**: Validates and enforces deployment policies at admission time.
-   * **Collector**: Node-level kernel monitoring (eBPF) for runtime threat detection and network graphing.
-
----
-
-## 📁 Repository Structure
-
-```text
 .
 ├── manifests/
 │   ├── central.yaml            # Central CustomResource (Route, Scanner V4, Resources)
@@ -133,3 +125,4 @@ oc get route central-mtls -n stackrox
 * **Clear badges and visual layout**: Ready for GitHub presentation.
 * **Exact commands**: Uses the exact parameters (`central.stackrox:443`, `Scanner V4`, `postCommit`) from your working environment.
 * **Troubleshooting friendly**: Includes verification commands and secret extraction snippets.
+
