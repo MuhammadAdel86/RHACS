@@ -1,0 +1,33 @@
+apiVersion: platform.stackrox.io/v1alpha1
+kind: Central
+metadata:
+  name: central
+  namespace: stackrox
+spec:
+  central:
+    exposure:
+      route:
+        enabled: true           # إنشاء OpenShift Route للوصول للـ Dashboard
+    resources:
+      requests:
+        cpu: 750m
+        memory: 512Mi
+      limits:
+        cpu: 2
+        memory: 2Gi
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Enabled
+        minReplicas: 1
+        maxReplicas: 3
+  scannerV4:
+    indexer:
+      scaling:
+        autoScaling: Disabled
+        replicas: 1
+    matcher:
+      scaling:
+        autoScaling: Disabled
+        replicas: 2
+    scannerComponent: Enabled   # تفعيل الجيل الأحدث من الفاحص الأمني
