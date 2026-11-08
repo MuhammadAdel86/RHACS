@@ -1,0 +1,36 @@
+---
+apiVersion: platform.stackrox.io/v1alpha1
+kind: SecuredCluster
+metadata:
+  name: managed-cluster
+  namespace: stackrox
+spec:
+  centralEndpoint: "central.stackrox:443"
+  clusterName: central-cluster
+  clusterLabels:
+    cluster: central-cluster
+  monitoring:
+    openshift:
+      enabled: true
+  auditLogs:
+    collection: Auto
+  sensor:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+      limits:
+        memory: 4Gi
+        cpu: 2
+  scanner:
+    analyzer:
+      scaling:
+        autoScaling: Disabled
+        replicas: 1
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: 250m
+        limits:
+          memory: 2Gi
+          cpu: 1
