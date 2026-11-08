@@ -26,65 +26,58 @@ The deployment consists of two primary planes within the `stackrox` namespace:
 
 ---
 
-## 🚀 Quickstart & Deployment
-**Prerequisites
-
-    OpenShift Container Platform (OCP) 4.12+ cluster with cluster-admin access.
-
-    OpenShift CLI (oc) installed and configured.
-
-    RHACS Operator installed via OperatorHub (namespace: rhacs-operator or openshift-operators).
-
 Step 1: Deploy RHACS Central
 
-Create the target namespace and apply the Central custom resource:
+💻 Run in Bash Terminal:
 Bash
 
-# 1. Create the project
-oc new-project stackrox
+# [BASH] 1. Create the project namespace
+$ oc new-project stackrox
 
-# 2. Deploy Central and Scanner V4
-oc apply -f manifests/central.yaml -n stackrox
+# [BASH] 2. Deploy Central and Scanner V4
+$ oc apply -f manifests/central.yaml -n stackrox
 
 Monitor Central Startup:
+
+💻 Run in Bash Terminal:
 Bash
 
-watch oc get pods,pvc,deploy,svc,route -n stackrox
+# [BASH] Watch the status of pods, PVCs, deployments, services, and routes
+$ watch oc get pods,pvc,deploy,svc,route -n stackrox
 
 Step 2: Retrieve Admin Credentials & Access UI
 
-Extract the auto-generated administrator password:
+💻 Run in Bash Terminal:
 Bash
 
-oc get secret central-htpasswd -n stackrox -o jsonpath='{.data.password}' | base64 -d && echo
+# [BASH] Extract the auto-generated administrator password
+$ oc get secret central-htpasswd -n stackrox -o jsonpath='{.data.password}' | base64 -d && echo
 
-Get the route URL and access the web console:
+💻 Run in Bash Terminal:
 Bash
 
-echo "Central URL: https://$(oc get route central -n stackrox -o jsonpath='{.spec.host}')"
+# [BASH] Retrieve the Central Web Console URL
+$ echo "Central URL: https://$(oc get route central -n stackrox -o jsonpath='{.spec.host}')"
 
     Username: admin
 
-    Password: (Extracted from the secret above)
+    Password: (Extracted from the secret command above)
 
 Step 3: Secure the Cluster
 
-Apply the SecuredCluster manifest to enroll the cluster with Central:
+💻 Run in Bash Terminal:
 Bash
 
-oc apply -f manifests/secured-cluster.yaml -n stackrox
+# [BASH] Apply the SecuredCluster manifest
+$ oc apply -f manifests/secured-cluster.yaml -n stackrox
 
-Verify that Sensor, Admission Control, and Collector pods are active:
+💻 Run in Bash Terminal:
 Bash
 
-oc get pods -n stackrox -l 'app.kubernetes.io/name in (sensor, admission-control, collector)'
+# [BASH] Verify that Sensor, Admission Control, and Collector pods are running
+$ oc get pods -n stackrox -l 'app.kubernetes.io/name in (sensor, admission-control, collector)'
 
-
-# Check all Custom Resources
-oc get central,securedcluster -n stackrox
-
-# Validate internal mTLS endpoints
-oc get route central-mtls -n stackrox
+🛡️ Shift-Left: CI/CD Security Integration
 
 📚 References
 
@@ -94,7 +87,17 @@ oc get route central-mtls -n stackrox
 
     OpenShift Build Hooks Documentation
 
+---
+🔍 Verification & Health Checks
 
+💻 Run in Bash Terminal:
+Bash
+
+# [BASH] Check all Custom Resources in the namespace
+$ oc get central,securedcluster -n stackrox
+
+# [BASH] Validate internal mTLS endpoints
+$ oc get route central-mtls -n stackrox
 ---
 
 ### Key Highlights of this README:
